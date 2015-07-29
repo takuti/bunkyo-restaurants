@@ -1,11 +1,3 @@
-function generatePopupContent(properties) {
-  content = "";
-  for (key in properties) {
-    content += "<b>" + key + "</b> " + properties[key] + "<br />";
-  }
-  return content;
-}
-
 // set leaftlet map
 var map = L.map('map').setView([35.72, 139.75], 14);
 L.tileLayer('https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -15,6 +7,8 @@ L.tileLayer('https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={access
     accessToken: 'pk.eyJ1IjoidGFrdXRpIiwiYSI6ImFmM2UxMmFjMGI5MDA2NjIzYmZlODJkYzBkYThkZjAxIn0.VuS-dUlX3RIldJBJstFLMw'
 }).addTo(map);
 
+var categories = {};
+
 httpObj = new XMLHttpRequest();
 httpObj.open('get', './bunkyo100.geojson', true);
 httpObj.onload = function(){
@@ -22,7 +16,6 @@ httpObj.onload = function(){
   var points = JSON.parse(this.responseText)['features'];
 
   // add markers for each point
-  var categories = {}
   for (var i = 0; i < points.length; i++) {
     var marker = L.marker(points[i]['geometry']['coordinates'].reverse()).addTo(map);
     marker.bindPopup(generatePopupContent(points[i]['properties']));
@@ -35,13 +28,30 @@ httpObj.onload = function(){
     }
   }
 
-  // convert marker group (array) -> layer group
-  /*
-  for (cat in categories) {
-    categories[cat] = L.layerGroup(categories[cat]);
-    console.log(cat);
-  }
-  L.control.layers(categories).addTo(map);
-  */
+  document.getElementById('category-checkboxes').innerHTML = generateCategoryCheckboxesContent();
 }
 httpObj.send(null);
+
+function generatePopupContent(properties) {
+  var content = '';
+  for (key in properties) {
+    content += '<b>' + key + '</b> ' + properties[key] + '<br />';
+  }
+  return content;
+}
+
+function generateCategoryCheckboxesContent() {
+  var content = '';
+  for (cat in categories) {
+    content += '<label><input type=\"checkbox\" name=\"' + cat + '\" onclick=toggleMarkerByCategory(\"' + cat + '\"); checked>' + cat + '(' + categories[cat].length + ')</label><br />';
+  }
+  return content;
+}
+
+function toggleMarkerByCategory(cat) {
+  for (var i = 0; i < categories[cat].length; i++) {
+    var marker = categories[cat][i];
+    if (map.hasLayer(marker)) map.removeLayer(marker);
+    else map.addLayer(marker);
+  }
+}
