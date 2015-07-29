@@ -43,7 +43,7 @@ function generatePopupContent(properties) {
 function generateCategoryCheckboxesContent() {
   var content = '';
   for (cat in categories) {
-    content += '<label><input type=\"checkbox\" name=\"' + cat + '\" onclick=toggleMarkerByCategory(\"' + cat + '\"); checked>' + cat + '(' + categories[cat].length + ')</label><br />';
+    content += '<span class=\"category-checkbox\"><label><input type=\"checkbox\" name=\"' + cat + '\" onclick=toggleMarkerByCategory(\"' + cat + '\"); checked>' + cat + '(' + categories[cat].length + ')</label></span>';
   }
   return content;
 }
