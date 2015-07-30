@@ -43,9 +43,9 @@ function generatePopupContent(properties) {
 }
 
 function generateCategoryCheckboxesContent() {
-  var content = '';
+  var content = '<span class=\"category-checkbox\"><label><input type=\"checkbox\" name=\"check-all\" onchange=\"checkAll(this);\" checked><b>すべて</b></label></span>';
   for (cat in categories) {
-    content += '<span class=\"category-checkbox\"><label><input type=\"checkbox\" name=\"' + cat + '\" onclick=toggleMarkerByCategory(\"' + cat + '\"); checked>' + cat + '(' + categories[cat].length + ')</label></span>';
+    content += '<span class=\"category-checkbox\"><label><input type=\"checkbox\" name=\"' + cat + '\" onchange=toggleMarkerByCategory(\"' + cat + '\"); checked>' + cat + '(' + categories[cat].length + ')</label></span>';
   }
   return content;
 }
@@ -55,5 +55,30 @@ function toggleMarkerByCategory(cat) {
     var marker = categories[cat][i];
     if (map.hasLayer(marker)) map.removeLayer(marker);
     else map.addLayer(marker);
+  }
+}
+
+function checkAll(element) {
+  var checkboxes = document.getElementsByTagName('input');
+  for (var i = 0; i < checkboxes.length; i++) {
+    if (checkboxes[i].type == 'checkbox') {
+      checkboxes[i].checked = element.checked;
+    }
+  }
+
+  if (element.checked) {
+    for (var cat in categories) {
+      for (var i = 0; i < categories[cat].length; i++) {
+        var marker = categories[cat][i];
+        if (!map.hasLayer(marker)) map.addLayer(marker);
+      }
+    }
+  } else {
+    for (var cat in categories) {
+      for (var i = 0; i < categories[cat].length; i++) {
+        var marker = categories[cat][i];
+        if (map.hasLayer(marker)) map.removeLayer(marker);
+      }
+    }
   }
 }
